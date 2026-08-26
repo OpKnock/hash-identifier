@@ -1,25 +1,6 @@
-```ruby
-██╗  ██╗ █████╗ ███████╗██╗  ██╗    ██╗██████╗
-██║  ██║██╔══██╗██╔════╝██║  ██║    ██║██╔══██╗
-███████║███████║███████╗███████║    ██║██║  ██║
-██╔══██║██╔══██║╚════██║██╔══██║    ██║██║  ██║
-██║  ██║██║  ██║███████║██║  ██║    ██║██████╔╝
-╚═╝  ╚═╝╚═╝  ╚═╝╚══════╝╚═╝  ╚═╝    ╚═╝╚═════╝
-```
+# Hash Identifier
 
-[![Cybersecurity Projects](https://img.shields.io/badge/Cybersecurity--Projects-Foundations-red?style=flat&logo=github)](https://github.com/CarterPerez-dev/Cybersecurity-Projects/tree/main/PROJECTS/foundations/hash-identifier)
-[![Tier: Foundations](https://img.shields.io/badge/Tier-Foundations-00C9A7?style=flat&logo=bookstack&logoColor=white)](https://github.com/CarterPerez-dev/Cybersecurity-Projects/tree/main/PROJECTS/foundations)
-[![Python 3.14](https://img.shields.io/badge/Python-3.14-3776AB?style=flat&logo=python&logoColor=white)](https://www.python.org)
-[![License: AGPLv3](https://img.shields.io/badge/License-AGPL_v3-purple.svg)](https://www.gnu.org/licenses/agpl-3.0)
-[![Tests](https://img.shields.io/badge/tests-pytest-0A9EDC?style=flat&logo=pytest&logoColor=white)](https://pytest.org)
-[![Lint](https://img.shields.io/badge/lint-ruff%20%2B%20mypy%20%2B%20pylint-D7FF64?style=flat)](https://github.com/astral-sh/ruff)
-
-> Identify the algorithm behind a hash string by its prefix, length, and character set — the first move in any password-cracking workflow.
-
-*This is a quick overview — security theory, architecture, and full walkthroughs are in the [learn modules](#learn).*
-
-> [!NOTE]
-> **Foundations tier** — this project is built for someone who has never written Python before. The source code is heavily commented as a teaching aid, the `learn/` folder explains every concept from zero, and the whole tool is one readable file. If you already know Python, jump straight to [`PROJECTS/beginner/hash-cracker`](../../beginner/hash-cracker) — the natural cracking companion to this identifier.
+Identify the algorithm behind a hash string by its prefix, length, and character set — the first move in any password-cracking workflow.
 
 ## What It Does
 
@@ -39,10 +20,8 @@ just run -- 5f4dcc3b5aa765d61d8327deb882cf99
 # ✔ MD5 (medium) — 32 hex chars, most likely candidate at this length
 ```
 
-> [!TIP]
-> This project uses [`just`](https://github.com/casey/just) as a command runner. Type `just` to see all available commands.
->
-> Install: `curl -sSf https://just.systems/install.sh | bash -s -- --to ~/.local/bin`
+> [!NOTE]
+> **Foundations tier** — this project is built for someone who has never written Python before. The source code is heavily commented as a teaching aid, the `learn/` folder explains every concept from zero, and the whole tool is one readable file. If you already know Python, jump straight to `PROJECTS/beginner/hash-cracker` — the natural cracking companion to this identifier.
 
 ## Demo Hashes
 
@@ -57,13 +36,6 @@ Try these — each demonstrates a different identification path:
 | `$apr1$JlOdSlVe$ipa1mTAv3LFRBHHzqaIaH/` | Apache MD5-crypt | prefix `$apr1$` — Apache htpasswd MD5 variant (`htpasswd -m`) |
 | `*A4B6157319038724E3560894F7F932C8886EBFCF` | MySQL5 | starts with `*` followed by 40 uppercase hex chars |
 | `eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIn0.dozjgN...` | JWT (not a hash) | leading `eyJ` is base64 of `{"` — JWT, not a hash |
-
-```bash
-just run -- 5f4dcc3b5aa765d61d8327deb882cf99
-just run -- '$2b$12$EixZaYVK1fsbw1ZfbX3OXePaWxn96p36WQNQy.uK4Of2T7G.VHvgvWK'
-just run -- '*A4B6157319038724E3560894F7F932C8886EBFCF'
-just run -- e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
-```
 
 > [!IMPORTANT]
 > Always wrap hashes that begin with `$` in **single quotes**. Without quotes your shell will try to expand `$2`, `$P$`, `$1$` etc. as shell variables and silently mangle the input.
@@ -100,9 +72,9 @@ This project includes step-by-step learning materials covering security theory, 
 
 ## See Also
 
-- [`PROJECTS/beginner/hash-cracker`](../../beginner/hash-cracker) — the natural sibling. Once this tool tells you *what* a hash is, that one teaches you how to crack it.
-- [`PROJECTS/foundations/http-headers-scanner`](../http-headers-scanner) — another foundations-tier Python project, slightly more involved I/O.
-- [`PROJECTS/foundations/password-manager`](../password-manager) — the hardest foundations-tier project; covers Argon2id, AES-GCM, and on-disk vaults.
+- `PROJECTS/beginner/hash-cracker` — the natural sibling. Once this tool tells you *what* a hash is, that one teaches you how to crack it.
+- `PROJECTS/foundations/http-headers-scanner` — another foundations-tier Python project, slightly more involved I/O.
+- `PROJECTS/foundations/password-manager` — the hardest foundations-tier project; covers Argon2id, AES-GCM, and on-disk vaults.
 
 ## License
 
