@@ -2,61 +2,146 @@
 
 Identify the algorithm behind a hash string by its prefix, length, and character set — the first move in any password-cracking workflow.
 
-## What It Does
+## Overview
 
-- Identify ~30 hash formats by prefix (`$2b$`, `$argon2id$`, `$apr1$`, `pbkdf2_sha256$`, `{SSHA}`, and more)
-- Identify common hex hashes by length (MD5, SHA-1, SHA-256, SHA-512, NTLM, MD4, RIPEMD, BLAKE2, SHA-3)
-- Recognize MySQL5, NetNTLMv1/v2, and traditional 13-char DES crypt by shape
-- Detect non-hash inputs (JWTs, base64 blobs) and tell the user what they actually pasted
-- Return ranked candidates with `high` / `medium` / `low` confidence and a one-line *reason* for every guess
-- Pure-function core — no network, no filesystem, no global state, instant runtime
-- Rich-rendered colored output table; clean exit codes for shell scripting
+The Hash Identifier is an educational cryptography tool designed to demonstrate hash algorithm identification techniques. This tool helps security professionals and developers understand hash format recognition, which is the first step in any password-cracking or security analysis workflow. The identification is performed entirely offline with no network access required.
+
+**Important:** This tool is intended solely for educational and educational purposes. Hash algorithm identification is a reconnaissance step only and should never be used as the sole basis for security decisions. This tool is for learning about hash formats and understanding the identification process in cryptography.
+
+## Features
+
+### Hash Format Identification
+
+- **~30 hash formats** identified by distinctive prefixes:
+  - `$2b$`, `$2a$`, `$2y$` - bcrypt variants
+  - `$argon2id$` - Argon2id (modern standard)
+  - `$apr1$` - Apache MD5-crypt (htpasswd -m)
+  - `$1$` - MD5-crypt
+  - `{SSHA}` - Salted SHA hash
+  - And many more
+
+### Hex Hash Identification
+
+- **Common hash lengths** identified by character count:
+  - **MD5**: 32 hex characters
+  - **SHA-1**: 40 hex characters
+  - **SHA-256**: 64 hex characters
+  - **SHA-512**: 128 hex characters
+  - **NTLM**: 32 hex characters (specific format)
+  - **MD4**: 32 hex characters
+  - **RIPEMD**: 32 hex characters
+  - **BLAKE2**: Various lengths
+  - **SHA-3**: Various lengths
+
+### Input Type Detection
+
+- **MySQL5 format**: Recognized by `*` prefix followed by 40 uppercase hex chars
+- **NetNTLMv1/v2**: Traditional 13-char DES crypt recognition
+- **Non-hash input detection**: Identifies JWTs, base64 blobs, and other non-hash inputs
+- **JWT detection**: Leading `eyJ` indicates base64-encoded JSON Web Token
+
+### Confidence Scoring
+
+- **high / medium / low confidence** rankings for each guess
+- **One-line reason** for every guess explaining the identification logic
+- **Ranked candidates** sorted by likelihood
+
+### Rich Output
+
+- **Colored output table**: Visual display of identification results
+- **Clean exit codes**: For shell scripting and automation
+- **Pure-function core**: No network, no filesystem, no global state, instant runtime
+
+### Educational Design
+
+- **Foundations tier**: Built for someone who has never written Python before
+- **Heavily commented source code**: Teaching aid with explanations
+- **learn/ folder**: Explains every concept from zero
+- **Single readable file**: Entire tool is one file for easy understanding
+
+## Installation
+
+### Requirements
+
+- **Python 3.14+**: The install script will check version compatibility
+- **uv**: Modern Python package manager (auto-installed by `./install.sh`)
+- **just**: Command runner (auto-installed by `./install.sh`)
+
+### No Compilers or System Libraries Required
+
+- Pure Python implementation
+- No system libraries needed
+- No network access required
+- Project is one Python file plus tests
+
+### Install Script
+
+```bash
+# Run the install script (auto-installs dependencies)
+./install.sh
+
+# Or using uv and just directly
+uv tool install hash-identifier
+```
+
+### Verify Installation
+
+```bash
+hash-identifier --help
+just
+# Lists available recipes:
+# just test       # run pytest (30+ tests, runs in under a second)
+# just lint       # ruff + mypy --strict + pylint
+# just format     # yapf
+# just run -- <h> # identify a hash
+```
 
 ## Quick Start
 
 ```bash
-./install.sh
+# Identify a hash
 just run -- 5f4dcc3b5aa765d61d8327deb882cf99
 # ✔ MD5 (medium) — 32 hex chars, most likely candidate at this length
+
+# Or using uv
+uv run hash_identifier 5f4dcc3b5aa765d61d8327deb882cf99
 ```
 
-> [!NOTE]
-> **Foundations tier** — this project is built for someone who has never written Python before. The source code is heavily commented as a teaching aid, the `learn/` folder explains every concept from zero, and the whole tool is one readable file. If you already know Python, jump straight to `PROJECTS/beginner/hash-cracker` — the natural cracking companion to this identifier.
+### Using just as Command Runner
 
-## Demo Hashes
+Type `just` to see all available recipes:
 
-Try these — each demonstrates a different identification path:
+| Recipe | Description |
+|--------|-------------|
+| `just` | List available recipes |
+| `just test` | Run pytest (30+ tests, runs in under a second) |
+| `just lint` | Run ruff + mypy --strict + pylint |
+| `just format` | Format with yapf |
+| `just run -- <h>` | Identify a hash by passing the hash value |
 
-| Hash | Detected as | Why |
-|------|-------------|-----|
-| `5f4dcc3b5aa765d61d8327deb882cf99` | MD5 | 32 hex chars — most likely candidate at this length |
-| `e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855` | SHA-256 | 64 hex chars — most likely candidate at this length |
-| `$2b$12$EixZaYVK1fsbw1ZfbX3OXePaWxn96p36WQNQy.uK4Of2T7G.VHvgvWK` | bcrypt | prefix `$2b$` — bcrypt PHC string, 2b variant (current) |
-| `$argon2id$v=19$m=65536,t=3,p=4$c29tZXNhbHQ$RdescudvJCsgt3ub+b+dWRWJTmaaJObG` | Argon2id | prefix `$argon2id$` — modern PHC string, the current standard |
-| `$apr1$JlOdSlVe$ipa1mTAv3LFRBHHzqaIaH/` | Apache MD5-crypt | prefix `$apr1$` — Apache htpasswd MD5 variant (`htpasswd -m`) |
-| `*A4B6157319038724E3560894F7F932C8886EBFCF` | MySQL5 | starts with `*` followed by 40 uppercase hex chars |
-| `eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIn0.dozjgN...` | JWT (not a hash) | leading `eyJ` is base64 of `{"` — JWT, not a hash |
+## Commands Reference
 
-> [!IMPORTANT]
-> Always wrap hashes that begin with `$` in **single quotes**. Without quotes your shell will try to expand `$2`, `$P$`, `$1$` etc. as shell variables and silently mangle the input.
+### `just run -- 5f4dcc3b5aa765d61d8327deb882cf99`
 
-## Tooling
+Identify the algorithm behind the hash string.
 
-```bash
-just            # list available recipes
-just test       # run pytest (30+ tests, runs in under a second)
-just lint       # ruff + mypy --strict + pylint
-just format     # yapf
-just run -- <h> # identify a hash
-```
+Output: `✔ MD5 (medium) — 32 hex chars, most likely candidate at this length`
 
-## Requirements
+### `just test`
 
-- **Python 3.14+** — the install script will check.
-- [`uv`](https://github.com/astral-sh/uv) — modern Python package manager (auto-installed by `./install.sh`).
-- [`just`](https://github.com/casey/just) — command runner (auto-installed by `./install.sh`).
+Run the pytest test suite (30+ tests, runs in under a second).
 
-No compilers, no system libraries, no network access required. The project is one Python file plus tests.
+### `just lint`
+
+Run code quality checks (ruff + mypy --strict + pylint).
+
+### `just format`
+
+Format the code with yapf.
+
+### `just run -- <h>`
+
+Identify a hash by passing the hash value as an argument.
 
 ## Learn
 
@@ -64,18 +149,44 @@ This project includes step-by-step learning materials covering security theory, 
 
 | Module | Topic |
 |--------|-------|
-| [00 - Overview](learn/00-OVERVIEW.md) | Quick start, prerequisites, common problems |
-| [01 - Concepts](learn/01-CONCEPTS.md) | What hashes are, real-world breaches, the three identification signals |
-| [02 - Architecture](learn/02-ARCHITECTURE.md) | Three-layer architecture, six-step decision pipeline, data-driven design |
-| [03 - Implementation](learn/03-IMPLEMENTATION.md) | Line-by-line walkthrough — every Python feature explained when first encountered |
-| [04 - Challenges](learn/04-CHALLENGES.md) | Five tiers of extension ideas, from adding a prefix rule to building an ML classifier |
+| **00 - Overview** | Quick start, prerequisites, common problems |
+| **01 - Concepts** | What hashes are, real-world breaches, the three identification signals |
+| **02 - Architecture** | Three-layer architecture, six-step decision pipeline, data-driven design |
+| **03 - Implementation** | Line-by-line walkthrough — every Python feature explained when first encountered |
+| **04 - Challenges** | Five tiers of extension ideas, from adding a prefix rule to building an ML classifier |
 
-## See Also
+## Legal and Ethical Notes
 
-- `PROJECTS/beginner/hash-cracker` — the natural sibling. Once this tool tells you *what* a hash is, that one teaches you how to crack it.
-- `PROJECTS/foundations/http-headers-scanner` — another foundations-tier Python project, slightly more involved I/O.
-- `PROJECTS/foundations/password-manager` — the hardest foundations-tier project; covers Argon2id, AES-GCM, and on-disk vaults.
+### Educational Use Only
+
+This tool is designed for educational purposes. Key principles:
+
+- **Hash identification is reconnaissance only**: Should not be used as sole basis for security decisions
+- **Only identify hashes** from materials you own or have permission to analyze
+- **Never use identification results** for actual security enforcement without additional verification
+- **Understand the identification process** as part of learning cryptography
+
+### Learning Value
+
+Understanding hash identification helps students:
+
+- Recognize different hash algorithm formats
+- Learn about password storage schemes
+- Understand the first step in password-cracking workflows
+- Appreciate why multiple verification steps are needed in security analysis
+
+### Legal Compliance
+
+- Use only on hash values you own or have permission to analyze
+- Educational purpose only - do not use for actual security enforcement
+- Follow institutional policies regarding cryptography tools
+
+### Responsible Use
+
+- Always combine identification with other security analysis
+- Never make security decisions based solely on hash identification
+- Report any misuse of the tool to appropriate authorities
 
 ## License
 
-AGPL 3.0
+AGPL 3.0 - See the LICENSE file for full terms and conditions. This project is provided "as is" without warranty of any kind, either express or implied. AGPL requires that source code be made available to users over a network.
